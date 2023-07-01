@@ -1,4 +1,4 @@
-# SLIME-CRITIC
+# SLIME Critic
 
 SLIME extension for [Lisp Critic](https://github.com/g000001/lisp-critic "lisp-critic").
 
