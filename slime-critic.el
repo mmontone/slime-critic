@@ -26,6 +26,14 @@
 
 (require 'slime)
 
+(defgroup slime-critic nil
+  "SLIME Critic settings."
+  :group 'slime)
+
+(defcustom slime-critic-create-notes-in-buffer t
+  "When enabled, annotate the critiqued buffers with notes."
+  :group 'slime-critic)
+
 ;; A problem with compilation-mode is that it uses line and column for positions,
 ;; but critiques contain raw file position.
 ;; So we need to convert opening a buffer and line-number-at-pos
@@ -35,22 +43,22 @@
   (let ((buffer (find-file-noselect file)))
     (with-current-buffer buffer
       (mapcar (lambda (critique)
-		(let ((line (line-number-at-pos (1+ (car critique)))))
-		  (cons line (cdr critique))))
-	      critiques))))
+                (let ((line (line-number-at-pos (1+ (car critique)))))
+                  (cons line (cdr critique))))
+              critiques))))
 
 (defun slime-critic--show-critiques (critiques file)
-  "Show the Lisp CRITIQUES."
+  "Show the Lisp CRITIQUES from FILE."
   (let ((buffer (get-buffer-create "*slime-critic*"))
-	(critiques (slime-critic--convert-file-positions-to-line critiques file)))
+        (critiques (slime-critic--convert-file-positions-to-line critiques file)))
     (with-current-buffer buffer
       (setq buffer-read-only nil)
       (erase-buffer)
       (if (null critiques)
-	  (insert "Nothing to point out. Well done!")
-	(dolist (critique critiques)
-	  (insert (format "%s:%d:%d" file (car critique) 0))
-	  (newline)
+          (insert "Nothing to point out. Well done!")
+        (dolist (critique critiques)
+          (insert (format "%s:%d:%d" file (car critique) 0))
+          (newline)
           (insert (cdr critique))
           (newline 2)))
       (compilation-mode)
@@ -65,14 +73,14 @@
       (slime-critic--show-critiques critiques file))))
 
 (defun slime-critic--create-note (critique buffer)
-  "Create a slime-note from CRITIQUE."
+  "Create a slime-note from CRITIQUE for BUFFER."
   ;; See slime-goto-source-location for location format
   (list :severity :style-warning
         :message (cdr critique)
         :location (list :location
-			(list :buffer buffer)
-			(list :position (1+ (car critique)))
-			nil)
+                        (list :buffer buffer)
+                        (list :position (1+ (car critique)))
+                        nil)
         :source-context nil))
 
 (defun slime-critic-critique-buffer ()
@@ -84,20 +92,28 @@
     (slime-eval-async `(slime-critic:critique-file ,buffer-file-name)
       (lambda (critiques)
         (slime-critic--show-critiques critiques buffer-file-name)
-        (let ((notes (mapcar (lambda (c)
-			       (slime-critic--create-note c buffer))
-			     critiques)))
-          (with-current-buffer buffer
-            (slime-highlight-notes notes)))))))
+        (when slime-critic-create-notes-in-buffer
+          (let ((notes (mapcar (lambda (c)
+                                 (slime-critic--create-note c buffer))
+                               critiques)))
+            (with-current-buffer buffer
+              (slime-highlight-notes notes))))))))
+
+(defun slime-critic-clear-notes ()
+  "Clear the highlighted notes."
+  (interactive)
+  (slime-remove-old-overlays))
 
 (defun slime-critic--add-to-slime-menu ()
   "Add slime-critic menu to slime menu."
   (easy-menu-add-item 'menubar-slime nil
-		      '("Critic"
-			["Critique file" slime-critic-critique-file
-			 :help "Critique a file"]
-			["Critique buffer" slime-critic-critique-buffer
-			 :help "Critique a buffer"])))
+                      '("Critic"
+                        ["Critique file" slime-critic-critique-file
+                         :help "Critique a file"]
+                        ["Critique buffer" slime-critic-critique-buffer
+                         :help "Critique a buffer"]
+                        ["Clear buffer notes" slime-critic-clear-notes
+                         :help "Remove the critique notes from buffers"])))
 
 (define-slime-contrib slime-critic
   "SLIME extension for lisp-critic"
