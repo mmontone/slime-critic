@@ -43,7 +43,7 @@
   (let ((buffer (find-file-noselect file)))
     (with-current-buffer buffer
       (mapcar (lambda (critique)
-                (let ((line (line-number-at-pos (1+ (car critique)))))
+                (let ((line (line-number-at-pos (car critique))))
                   (cons line (cdr critique))))
               critiques))))
 
@@ -83,7 +83,7 @@
         :message (cdr critique)
         :location (list :location
                         (list :buffer buffer)
-                        (list :position (1+ (car critique)))
+                        (list :position (car critique))
                         nil)
         :source-context nil))
 

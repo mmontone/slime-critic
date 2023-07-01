@@ -41,7 +41,8 @@ The result depends on the value of RETURN:
               (setq critique (reformat-critique critique))
               (case return
                 (:simple
-                 (push (cons file-position critique)
+                 ;; add 2 to get the exact position for Emacs buffers
+                 (push (cons (+ file-position 2) critique)
                        critiques))
                 (:slime-notes
                  (push (list :severity :STYLE-WARNING ;; :NOTE, :STYLE-WARNING, :WARNING, or :ERROR.
@@ -50,7 +51,8 @@ The result depends on the value of RETURN:
                              ;; See slime-goto-source-location for location format
                              :location (list :location
                                              (list :file (princ-to-string file))
-                                             (list :position file-position 0)
+                                             ;; add 2 to get the exact position for Emacs buffers
+                                             (list :position (+ file-position 2) 0)
                                              nil))
                        critiques))))))))
     (nreverse critiques)))
