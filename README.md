@@ -10,6 +10,8 @@ The Lisp Critic scans your code for instances of bad Lisp programming practice.
 
 ℹ️ Please consider using [SLIME :star:](https://github.com/mmontone/slime-star), that comes with this extension preinstalled.
 
+Dowload `lisp-critic` via Quicklisp: `(ql:quickload :lisp-critic)`.
+
 Load `swank` and add this repository path to `swank::*load-path*`, in your Lisp compiler init file (~/.sbclrc if using SBCL):
 
 ```lisp
