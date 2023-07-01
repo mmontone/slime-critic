@@ -63,6 +63,9 @@
           (newline 2)))
       (compilation-mode)
       (setq buffer-read-only t)
+      (when slime-critic-create-notes-in-buffer
+        (add-hook 'kill-buffer-hook 'slime-critic-clear-notes)
+        (add-hook 'quit-window-hook 'slime-critic-clear-notes))
       (display-buffer buffer))))
 
 (defun slime-critic-critique-file (file)
