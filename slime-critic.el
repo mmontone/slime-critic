@@ -61,6 +61,7 @@
           (newline)
           (insert (cdr critique))
           (newline 2)))
+      (goto-char (point-min))
       (compilation-mode)
       (setq buffer-read-only t)
       (when slime-critic-create-notes-in-buffer
