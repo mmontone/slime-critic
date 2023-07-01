@@ -1,3 +1,5 @@
+(require :lisp-critic)
+
 (defpackage :slime-critic
   (:use :cl)
   (:export :critique-file))
