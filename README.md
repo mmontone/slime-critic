@@ -1,8 +1,8 @@
 # SLIME-CRITIC
 
-SLIME extension for [lisp-critic](https://github.com/g000001/lisp-critic "lisp-critic").
+SLIME extension for [Lisp Critic](https://github.com/g000001/lisp-critic "lisp-critic").
 
-The Lisp Critic scans your code for instances of bad Lisp programming practice. 
+Lisp Critic scans your code for instances of bad Lisp programming practice. 
 
 ![screenshot](screenshot.png "screenshot")
 
