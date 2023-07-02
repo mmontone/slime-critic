@@ -1,8 +1,10 @@
+(require :asdf)
 (require :lisp-critic)
 
 (defpackage :slime-critic
   (:use :cl)
-  (:export :critique-file))
+  (:export :critique-file
+           :critique-asdf-system))
 
 (in-package :slime-critic)
 
@@ -57,4 +59,26 @@ The result depends on the value of RETURN:
                        critiques))))))))
     (nreverse critiques)))
 
-(provide 'slime-critic)
+(declaim (ftype (function ((or string symbol)
+                           &key (:names list)
+                           (:return (member :simple :slime-notes)))
+                          list)
+                critique-asdf-system))
+(defun critique-asdf-system
+    (system-name &key (names (lisp-critic::get-pattern-names))
+                   (return :simple))
+  "Critique all the Lisp files required by the ASDF system."
+  (let* ((critiques '())
+         (asdf-system (asdf:find-system system-name :error-if-not-found))
+         (components (asdf:required-components asdf-system))
+         (lisp-files (remove-if-not (lambda (comp)
+                                      (typep comp 'asdf/lisp-action:cl-source-file))
+                                    components)))
+    (dolist (lisp-file lisp-files)
+      (let* ((component-pathname (asdf:component-pathname lisp-file))
+             (file-critiques (critique-file component-pathname
+                                            :names names :return return)))
+        (push (cons component-pathname file-critiques) critiques)))
+    critiques))
+
+(provide :slime-critic)
