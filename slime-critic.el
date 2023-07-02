@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2023  Mariano Montone
 
-;; Author: Mariano Montone(require 'slime) <marianomontone@gmail.com>
+;; Author: Mariano Montone <marianomontone@gmail.com>
 ;; Keywords: tools, lisp, extensions
 
 ;; This program is free software; you can redistribute it and/or modify
